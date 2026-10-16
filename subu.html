@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>🌸 SUBÜ Sınav & Duyuru</title>
+    <!-- iPhone Standalone PWA / Web Clip Ayarları -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SUBÜ">
+    <link rel="apple-touch-icon" href="https://images.emojiterra.com/google/noto-emoji/unicode-15/180/1f338.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-main: #130814;
+            --bg-card: rgba(34, 15, 32, 0.78);
+            --bg-card-hover: rgba(50, 22, 47, 0.92);
+            --border-color: rgba(244, 114, 182, 0.22);
+            --primary: #ec4899;
+            --primary-gradient: linear-gradient(135deg, #f43f5e 0%, #ec4899 50%, #f472b6 100%);
+            --accent-pink: #f472b6;
+            --accent-blush: #fbcfe8;
+            --text-primary: #fff1f2;
+            --text-secondary: #f4a9c6;
+            --text-muted: #b37c95;
+            --radius-card: 20px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: env(safe-area-inset-top, 20px) 16px env(safe-area-inset-bottom, 20px);
+            position: relative;
+            overflow-x: hidden;
+            line-height: 1.45;
+        }
+
+        /* Ambient Glows */
+        .ambient-glow {
+            position: fixed;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.22;
+            z-index: -1;
+            pointer-events: none;
+        }
+        .glow-top {
+            top: -100px;
+            left: -100px;
+            background: radial-gradient(circle, #ec4899 0%, #f43f5e 50%, transparent 70%);
+        }
+        .glow-bottom {
+            bottom: -100px;
+            right: -100px;
+            background: radial-gradient(circle, #e879f9 0%, #fb7185 50%, transparent 70%);
+        }
+
+        .app-wrapper {
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        /* Top Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.4rem;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 0 20px rgba(236, 72, 153, 0.2);
+            margin-top: 6px;
+        }
+
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #fff;
+            box-shadow: 0 6px 18px rgba(236, 72, 153, 0.45);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 20%, #fbcfe8 60%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.72rem;
+            color: var(--accent-blush);
+            background: rgba(236, 72, 153, 0.18);
+            padding: 0.2rem 0.55rem;
+            border-radius: 20px;
+            border: 1px solid rgba(244, 114, 182, 0.25);
+            margin-top: 0.2rem;
+        }
+
+        .dot-live {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 8px #34d399;
+        }
+
+        .btn-refresh {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-refresh:active {
+            transform: scale(0.92);
+            background: rgba(236, 72, 153, 0.25);
+        }
+
+        /* Filter Pills */
+        .filter-scroll {
+            display: flex;
+            gap: 0.6rem;
+            overflow-x: auto;
+            padding: 2px 2px 6px 2px;
+            scrollbar-width: none;
+        }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+
+        .filter-chip {
+            padding: 0.55rem 1rem;
+            background: rgba(34, 15, 32, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-chip.active {
+            background: var(--primary-gradient);
+            color: #ffffff;
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+        }
+
+        /* Feed List */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            padding-bottom: 30px;
+        }
+
+        .feed-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-card);
+            padding: 1.25rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            transition: transform 0.2s;
+            animation: cardAppear 0.35s ease-out;
+        }
+        .feed-card:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes cardAppear {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tag-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.25rem 0.65rem;
+            border-radius: 8px;
+            background: rgba(236, 72, 153, 0.2);
+            color: #fbcfe8;
+            border: 1px solid rgba(244, 114, 182, 0.3);
+            text-transform: uppercase;
+        }
+
+        .card-time {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+        }
+
+        .card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #fff1f2;
+            line-height: 1.35;
+        }
+
+        .card-body {
+            font-size: 0.86rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            white-space: pre-line;
+        }
+
+        .btn-card-action {
+            align-self: flex-start;
+            margin-top: 0.4rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.55rem 1rem;
+            border-radius: 10px;
+            background: rgba(236, 72, 153, 0.15);
+            border: 1px solid rgba(244, 114, 182, 0.3);
+            color: #fbcfe8;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .btn-card-action:active {
+            background: var(--primary-gradient);
+            color: #fff;
+        }
+
+        /* Empty State */
+        .empty-box {
+            text-align: center;
+            padding: 3.5rem 1.5rem;
+            color: var(--text-muted);
+        }
+        .empty-box i {
+            font-size: 3rem;
+            color: var(--accent-pink);
+            margin-bottom: 0.8rem;
+            opacity: 0.7;
+        }
+        .empty-box p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-glow glow-top"></div>
+    <div class="ambient-glow glow-bottom"></div>
+
+    <div class="app-wrapper">
+        <!-- Header -->
+        <header>
+            <div class="brand-title">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1>🌸 SUBÜ Takip</h1>
+                    <div class="status-pill">
+                        <span class="dot-live"></span>
+                        <span id="liveStatusText">Canlı Takip Aktif</span>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-refresh" onclick="loadNotifications()" title="Yenile">
+                <i id="refreshIcon" class="fa-solid fa-rotate-right"></i>
+            </button>
+        </header>
+
+        <!-- Filters -->
+        <div class="filter-scroll">
+            <button class="filter-chip active" onclick="setFilter('all', this)">🌸 Tümü</button>
+            <button class="filter-chip" onclick="setFilter('exam', this)">📝 Sınavlar</button>
+            <button class="filter-chip" onclick="setFilter('grade', this)">🎯 Notlar</button>
+            <button class="filter-chip" onclick="setFilter('homework', this)">📑 Ödevler</button>
+            <button class="filter-chip" onclick="setFilter('announce', this)">📢 Duyurular</button>
+        </div>
+
+        <!-- Notification Feed List -->
+        <div id="feedList" class="feed-container">
+            <div class="empty-box">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <p>Bildirimler yükleniyor...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TOPIC = "subu_gulsum";
+        let allMessages = [];
+        let currentFilter = "all";
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadNotifications();
+            setupLiveSSE();
+        });
+
+        // ntfy API'sinden geçmiş ve mevcut mesajları çek
+        async function loadNotifications() {
+            const icon = document.getElementById("refreshIcon");
+            icon.className = "fa-solid fa-rotate-right fa-spin";
+
+            try {
+                const res = await fetch(`https://ntfy.sh/${TOPIC}/json?poll=1`);
+                if (!res.ok) throw new Error("Ağ hatası");
+                const text = await res.text();
+                
+                const lines = text.trim().split("\n").filter(l => l.trim().length > 0);
+                allMessages = lines.map(line => {
+                    try { return JSON.parse(line); } catch(e) { return null; }
+                }).filter(m => m && (m.event === "message" || m.message));
+
+                // En yeniden en eskiye sırala
+                allMessages.sort((a, b) => (b.time || 0) - (a.time || 0));
+
+                renderFeed();
+            } catch (err) {
+                console.error("Yükleme hatası:", err);
+                document.getElementById("feedList").innerHTML = `
+                    <div class="empty-box">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <p>Bildirimler alınamadı. İnternet bağlantınızı kontrol edin.</p>
+                    </div>
+                `;
+            } finally {
+                setTimeout(() => { icon.className = "fa-solid fa-rotate-right"; }, 500);
+            }
+        }
+
+        // Canlı bildirimleri dinle (Server-Sent Events)
+        function setupLiveSSE() {
+            try {
+                const sse = new EventSource(`https://ntfy.sh/${TOPIC}/sse`);
+                sse.onmessage = (event) => {
+                    try {
+                        const newMsg = JSON.parse(event.data);
+                        if (newMsg && newMsg.event === "message") {
+                            // En üste ekle
+                            allMessages.unshift(newMsg);
+                            renderFeed();
+                        }
+                    } catch(e) {}
+                };
+            } catch(e) {
+                console.warn("SSE bağlantı uyarısı:", e);
+            }
+        }
+
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll(".filter-chip").forEach(c => c.classList.remove("active"));
+            btn.classList.add("active");
+            renderFeed();
+        }
+
+        function renderFeed() {
+            const container = document.getElementById("feedList");
+
+            const filtered = allMessages.filter(msg => {
+                const fullText = `${msg.title || ''} ${msg.message || ''}`.toLowerCase();
+                if (currentFilter === "all") return true;
+                if (currentFilter === "exam") return fullText.includes("sınav") || fullText.includes("quiz");
+                if (currentFilter === "grade") return fullText.includes("not") || fullText.includes("sonuç") || fullText.includes("puan");
+                if (currentFilter === "homework") return fullText.includes("ödev") || fullText.includes("proje");
+                if (currentFilter === "announce") return !fullText.includes("sınav") && !fullText.includes("not");
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-box">
+                        <i class="fa-regular fa-folder-open"></i>
+                        <p>Henüz bu kategoride bildirim bulunmuyor.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(msg => {
+                const title = msg.title || "SUBÜ Bildirimi";
+                const body = msg.message || "";
+                const url = msg.click || "https://lms.subu.edu.tr";
+                
+                let timeStr = "";
+                if (msg.time) {
+                    const d = new Date(msg.time * 1000);
+                    timeStr = d.toLocaleDateString("tr-TR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+                }
+
+                // Tag belirleme
+                let badgeText = "Duyuru";
+                if (title.includes("Sınav") || body.includes("sınav")) badgeText = "📝 Sınav";
+                else if (title.includes("Not") || body.includes("Sonuç")) badgeText = "🎯 Not";
+                else if (title.includes("Ödev")) badgeText = "📑 Ödev";
+
+                return `
+                    <div class="feed-card">
+                        <div class="card-top">
+                            <span class="tag-badge">${badgeText}</span>
+                            <span class="card-time">${timeStr}</span>
+                        </div>
+                        <div class="card-title">${escapeHtml(title)}</div>
+                        <div class="card-body">${escapeHtml(body)}</div>
+                        <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="btn-card-action">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> LMS'e Git
+                        </a>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function escapeHtml(str) {
+            if (!str) return "";
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
